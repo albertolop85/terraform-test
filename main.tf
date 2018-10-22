@@ -14,8 +14,13 @@ resource "aws_s3_bucket" "example_bucket" {
 }
 
 resource "aws_instance" "example_instance" {
-  ami           = "ami-b374d5a5"
+  ami           = "${lookup(var.ami_by_region, var.region)}"
   instance_type = "t2.micro"
+
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.example_instance.public_ip} > ip_address.txt"
+  }
+
   depends_on = ["aws_s3_bucket.example_bucket"]
 }
 
